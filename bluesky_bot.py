@@ -16,6 +16,12 @@ def get_random_liked_post():
         print("Error: Missing required environment variables")
         return
     
+    # Debug: show what we received (hide password)
+    print(f"BOT_HANDLE: '{BOT_HANDLE}'")
+    print(f"MAIN_HANDLE: '{MAIN_HANDLE}'")
+    print(f"MAIN_HANDLE length: {len(MAIN_HANDLE)}")
+    print(f"BOT_PASSWORD present: {bool(BOT_PASSWORD)}")
+    
     try:
         # Login to bot account
         client = Client()
