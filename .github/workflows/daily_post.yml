@@ -1,0 +1,32 @@
+name: Daily Bluesky Post
+
+on:
+  schedule:
+    # Runs every day at 10 AM UTC (adjust to your preference)
+    - cron: '0 10 * * *'
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    
+    - name: Run bot
+      env:
+        BOT_HANDLE: ${{ secrets.BOT_HANDLE }}
+        BOT_PASSWORD: ${{ secrets.BOT_PASSWORD }}
+        MAIN_HANDLE: ${{ secrets.MAIN_HANDLE }}
+      run: |
+        python bluesky_bot.py
