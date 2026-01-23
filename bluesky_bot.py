@@ -28,10 +28,16 @@ def get_random_liked_post():
         client.login(BOT_HANDLE, BOT_PASSWORD)
         print(f"Logged in as {BOT_HANDLE}")
         
-        # Fetch liked posts from your main account
-        print(f"Fetching likes from {MAIN_HANDLE}...")
+        # First, resolve the handle to get the DID (decentralized identifier)
+        print(f"Resolving handle: {MAIN_HANDLE}...")
+        profile = client.app.bsky.actor.get_profile({'actor': MAIN_HANDLE})
+        actor_did = profile.did
+        print(f"Resolved to DID: {actor_did}")
+        
+        # Fetch liked posts using the DID
+        print(f"Fetching likes...")
         likes_response = client.app.bsky.feed.get_actor_likes({
-            'actor': MAIN_HANDLE,
+            'actor': actor_did,
             'limit': 100  # Fetch up to 100 recent likes
         })
         
