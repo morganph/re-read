@@ -11,33 +11,23 @@ def get_random_liked_post():
     BOT_HANDLE = os.environ.get('BOT_HANDLE')
     BOT_PASSWORD = os.environ.get('BOT_PASSWORD')
     MAIN_HANDLE = os.environ.get('MAIN_HANDLE')
+    MAIN_PASSWORD = os.environ.get('MAIN_PASSWORD')
     
-    if not all([BOT_HANDLE, BOT_PASSWORD, MAIN_HANDLE]):
+    if not all([BOT_HANDLE, BOT_PASSWORD, MAIN_HANDLE, MAIN_PASSWORD]):
         print("Error: Missing required environment variables")
+        print(f"Need: BOT_HANDLE, BOT_PASSWORD, MAIN_HANDLE, MAIN_PASSWORD")
         return
     
-    # Debug: show what we received (hide password)
-    print(f"BOT_HANDLE: '{BOT_HANDLE}'")
-    print(f"MAIN_HANDLE: '{MAIN_HANDLE}'")
-    print(f"MAIN_HANDLE length: {len(MAIN_HANDLE)}")
-    print(f"BOT_PASSWORD present: {bool(BOT_PASSWORD)}")
-    
     try:
-        # Login to bot account
-        client = Client()
-        client.login(BOT_HANDLE, BOT_PASSWORD)
-        print(f"Logged in as {BOT_HANDLE}")
+        # Login to main account to fetch likes
+        main_client = Client()
+        main_client.login(MAIN_HANDLE, MAIN_PASSWORD)
+        print(f"Logged into main account: {MAIN_HANDLE}")
         
-        # First, resolve the handle to get the DID (decentralized identifier)
-        print(f"Resolving handle: {MAIN_HANDLE}...")
-        profile = client.app.bsky.actor.get_profile({'actor': MAIN_HANDLE})
-        actor_did = profile.did
-        print(f"Resolved to DID: {actor_did}")
-        
-        # Fetch liked posts using the DID
-        print(f"Fetching likes...")
-        likes_response = client.app.bsky.feed.get_actor_likes({
-            'actor': actor_did,
+        # Fetch YOUR OWN liked posts
+        print(f"Fetching your likes...")
+        likes_response = main_client.app.bsky.feed.get_actor_likes({
+            'actor': MAIN_HANDLE,
             'limit': 100  # Fetch up to 100 recent likes
         })
         
@@ -82,8 +72,12 @@ def get_random_liked_post():
                 # If still too long, just share the link
                 bot_post_text = f'From my bookmarks:\n{post_url}'
         
-        # Post it
-        client.send_post(text=bot_post_text)
+        # Post it from bot account
+        bot_client = Client()
+        bot_client.login(BOT_HANDLE, BOT_PASSWORD)
+        print(f"Logged into bot account: {BOT_HANDLE}")
+        
+        bot_client.send_post(text=bot_post_text)
         print(f"Successfully posted!\nContent: {bot_post_text}")
         
     except Exception as e:
