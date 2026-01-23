@@ -28,5 +28,6 @@ jobs:
         BOT_HANDLE: ${{ secrets.BOT_HANDLE }}
         BOT_PASSWORD: ${{ secrets.BOT_PASSWORD }}
         MAIN_HANDLE: ${{ secrets.MAIN_HANDLE }}
+        MAIN_PASSWORD: ${{ secrets.MAIN_PASSWORD }}
       run: |
         python bluesky_bot.py
