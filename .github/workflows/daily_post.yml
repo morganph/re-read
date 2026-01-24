@@ -3,7 +3,7 @@ name: Daily Bluesky Post
 on:
   schedule:
     # Runs every day at 10 AM UTC (adjust to your preference)
-    - cron: '0 10 * * *'
+    - cron: '0 15 * * *'
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
