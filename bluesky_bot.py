@@ -28,7 +28,7 @@ def get_random_liked_post():
         print(f"Fetching your likes...")
         likes_response = main_client.app.bsky.feed.get_actor_likes({
             'actor': MAIN_HANDLE,
-            'limit': 1000  # Fetch up to 1000 recent likes
+            'limit': 100  # Fetch up to 100 recent likes
         })
         
         if not likes_response.feed:
