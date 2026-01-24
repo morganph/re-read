@@ -28,7 +28,7 @@ def get_random_liked_post():
         print(f"Fetching your likes...")
         likes_response = main_client.app.bsky.feed.get_actor_likes({
             'actor': MAIN_HANDLE,
-            'limit': 1000  # Fetch up to 1000 recent likes
+            'limit': 100  # Fetch up to 100 recent likes
         })
         
         if not likes_response.feed:
@@ -39,22 +39,35 @@ def get_random_liked_post():
         random_like = random.choice(likes_response.feed)
         post = random_like.post
         
-        # Get post details for reposting
+        # Get post details for quote posting
         post_uri = post.uri
         post_cid = post.cid
         
         print(f"Selected post by @{post.author.handle}")
         
-        # Login to bot account and repost
+        # Login to bot account and create quote post
         bot_client = Client()
         bot_client.login(BOT_HANDLE, BOT_PASSWORD)
         print(f"Logged into bot account: {BOT_HANDLE}")
         
-        # Create a repost
-        bot_client.repost(uri=post_uri, cid=post_cid)
-        print(f"Successfully reposted!")
-        print(f"Original post by: @{post.author.handle}")
-        print(f"Post URI: {post_uri}")
+        # Create a quote post with embedded reference to the original
+        from atproto import models
+        
+        quote_text = "Reminding is revolutionary."
+        
+        # Create the embed for the quoted post
+        embed = models.AppBskyEmbedRecord.Main(
+            record=models.ComAtprotoRepoStrongRef.Main(
+                uri=post_uri,
+                cid=post_cid
+            )
+        )
+        
+        # Send the quote post
+        bot_client.send_post(text=quote_text, embed=embed)
+        print(f"Successfully quote posted!")
+        print(f"Message: {quote_text}")
+        print(f"Quoting post by: @{post.author.handle}")
         
     except Exception as e:
         print(f"Error occurred: {str(e)}")
