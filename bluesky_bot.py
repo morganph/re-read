@@ -50,12 +50,21 @@ def get_random_liked_post():
         bot_client.login(BOT_HANDLE, BOT_PASSWORD)
         print(f"Logged into bot account: {BOT_HANDLE}")
         
-        # Create a quote post with embedded reference to the original
-        from atproto import models
+        # List of possible messages - add or remove as you like!
+        messages = [
+            "Reminding is revolutionary.",
+            "Revisiting.",
+            "From the archives.",
+            "We forget more than we learn.",
+            "I bring things back."
+        ]
         
-        quote_text = "Reminding is revolutionary."
+        # Pick a random message
+        quote_text = random.choice(messages)
         
         # Create the embed for the quoted post
+        from atproto import models
+        
         embed = models.AppBskyEmbedRecord.Main(
             record=models.ComAtprotoRepoStrongRef.Main(
                 uri=post_uri,
