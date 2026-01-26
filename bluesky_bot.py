@@ -53,10 +53,11 @@ def get_random_liked_post():
         # List of possible messages - add or remove as you like!
         messages = [
             "Reminding is revolutionary.",
-            "Revisiting.",
-            "From the archives.",
-            "We forget more than we learn.",
-            "I bring things back."
+            "Forgetting outpaces learning.",
+            "Repitition is underrated.",
+            "Practice makes perfect.",
+            "Once is never.",
+            "Chase wisdom, not novelty."
         ]
         
         # Pick a random message
