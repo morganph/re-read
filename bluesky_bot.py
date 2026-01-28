@@ -24,19 +24,56 @@ def get_random_liked_post():
         main_client.login(MAIN_HANDLE, MAIN_PASSWORD)
         print(f"Logged into main account: {MAIN_HANDLE}")
         
-        # Fetch YOUR OWN liked posts
+        # Fetch YOUR OWN liked posts (fetch more to get older posts)
         print(f"Fetching your likes...")
-        likes_response = main_client.app.bsky.feed.get_actor_likes({
-            'actor': MAIN_HANDLE,
-            'limit': 100  # Fetch up to 100 recent likes
-        })
+        all_likes = []
+        cursor = None
         
-        if not likes_response.feed:
+        # Fetch multiple pages of likes to get older posts
+        for i in range(50):  # Fetch 50 pages = up to 5000 likes
+            likes_response = main_client.app.bsky.feed.get_actor_likes({
+                'actor': MAIN_HANDLE,
+                'limit': 100,
+                'cursor': cursor
+            })
+            
+            all_likes.extend(likes_response.feed)
+            print(f"Fetched {len(likes_response.feed)} likes (total: {len(all_likes)})")
+            
+            # Check if there are more pages
+            if hasattr(likes_response, 'cursor') and likes_response.cursor:
+                cursor = likes_response.cursor
+            else:
+                print("Reached end of likes")
+                break
+        
+        if not all_likes:
             print("No liked posts found!")
             return
         
-        # Pick a random post
-        random_like = random.choice(likes_response.feed)
+        print(f"Total likes fetched: {len(all_likes)}")
+        
+        # Filter out posts from the last 30 days
+        from datetime import datetime, timedelta, timezone
+        
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
+        
+        older_likes = []
+        for like in all_likes:
+            # Get the indexed timestamp from the like
+            if hasattr(like, 'indexed_at'):
+                post_date = datetime.fromisoformat(like.indexed_at.replace('Z', '+00:00'))
+                if post_date < cutoff_date:
+                    older_likes.append(like)
+        
+        print(f"Likes older than 30 days: {len(older_likes)}")
+        
+        if not older_likes:
+            print("No likes found older than 30 days!")
+            return
+        
+        # Pick a random post from the older ones
+        random_like = random.choice(older_likes)
         post = random_like.post
         
         # Get post details for quote posting
@@ -53,11 +90,12 @@ def get_random_liked_post():
         # List of possible messages - add or remove as you like!
         messages = [
             "Reminding is revolutionary.",
-            "Forgetting outpaces learning.",
-            "Repitition is underrated.",
-            "Practice makes perfect.",
-            "Once is never.",
-            "Chase wisdom, not novelty."
+            "Worth revisiting.",
+            "From the archives.",
+            "This deserves another look.",
+            "Bringing this back.",
+            "Still thinking about this one.",
+            "A good one to remember."
         ]
         
         # Pick a random message
