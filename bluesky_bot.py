@@ -105,9 +105,9 @@ def get_random_liked_post():
             "Reminding is revolutionary.",
             "Worth revisiting.",
             "From the archives.",
-            "This deserves another look.",
+            "Take another look.",
             "Bringing this back.",
-            "Still thinking about this one.",
+            "Reminder:",
             "A good one to remember."
         ]
         
