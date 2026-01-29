@@ -57,16 +57,29 @@ def get_random_liked_post():
         from datetime import datetime, timedelta, timezone
         
         cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
+        print(f"Cutoff date: {cutoff_date.strftime('%Y-%m-%d')}")
         
         older_likes = []
         for like in all_likes:
-            # Get the indexed timestamp from the like
-            if hasattr(like, 'indexed_at'):
-                post_date = datetime.fromisoformat(like.indexed_at.replace('Z', '+00:00'))
-                if post_date < cutoff_date:
-                    older_likes.append(like)
+            # Try to get the post creation date from the post record
+            post_date = None
+            
+            if hasattr(like.post, 'record') and hasattr(like.post.record, 'created_at'):
+                post_date = datetime.fromisoformat(like.post.record.created_at.replace('Z', '+00:00'))
+            elif hasattr(like.post, 'indexed_at'):
+                post_date = datetime.fromisoformat(like.post.indexed_at.replace('Z', '+00:00'))
+            
+            if post_date and post_date < cutoff_date:
+                older_likes.append(like)
         
         print(f"Likes older than 30 days: {len(older_likes)}")
+        
+        # If no old likes, show us the dates of the most recent ones for debugging
+        if not older_likes and all_likes:
+            print("Showing dates of first 5 likes for debugging:")
+            for i, like in enumerate(all_likes[:5]):
+                if hasattr(like.post, 'record') and hasattr(like.post.record, 'created_at'):
+                    print(f"  Like {i+1}: {like.post.record.created_at}")
         
         if not older_likes:
             print("No likes found older than 30 days!")
