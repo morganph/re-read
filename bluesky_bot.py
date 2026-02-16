@@ -102,12 +102,11 @@ def get_random_liked_post():
         
         # List of possible messages - add or remove as you like!
         messages = [
-            "Reminding is revolutionary.",
             "Worth revisiting.",
-            "From the archives.",
-            "Take another look.",
             "Bringing this back.",
             "Reminder:",
+            "Oh, yeah.",
+            "Right?",
             "A good one to remember."
         ]
         
